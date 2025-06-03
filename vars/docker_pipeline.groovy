@@ -1,10 +1,11 @@
-def call ( map config ) {
+def call ( Map config ) {
   def appName = config.appName
 node ('agent1') {
-    stage('build ${appName}') {
-      sh """"
+    stage("build ${appName}") {
+      sh '''
+      hostname -i
         mvn --version
-      """"
+      '''
     }
 }
 }
