@@ -11,8 +11,7 @@ node ('agent1') {
     }
     stage("build ${appName}") {
       sh """
-      hostname -i
-        mvn --version
+        mvn clean package
       """
     }
 }
