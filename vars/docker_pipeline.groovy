@@ -4,16 +4,16 @@ def call ( Map config ) {
 node ('agent1') {
     stage("checkout SCM") {
     withCredentials([gitUsernamePassword(credentialsId: 'Github_Token_New', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-      sh '''
+      sh """
          git clone "${gitrepo}"
-      '''
+      """
      }
     }
     stage("build ${appName}") {
-      sh '''
+      sh """
       hostname -i
         mvn --version
-      '''
+      """
     }
 }
 }
