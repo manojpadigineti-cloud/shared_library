@@ -30,7 +30,7 @@ def call ( Map config ) {
              script {
                if (params.Code_Scan == 'YES') {
                  withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_AUTH')]) {
-                   withSonarQubeEnv('Sonar-Server') {
+                withSonarQubeEnv('Sonar-Server') {
                  Sonar_Scan(SONAR_AUTH).call()
                    timeout(time: 2, unit: 'MINUTES') {
                      waitForQualityGate abortPipeline: true
