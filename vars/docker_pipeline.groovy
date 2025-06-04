@@ -30,7 +30,7 @@ def call ( Map config ) {
              script {
                if (params.Code_Scan == 'YES') {
                  withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_AUTH')]) {
-                 Sonar_Scan($SONAR_AUTH).call()
+                 Sonar_Scan(SONAR_AUTH).call()
                 }
               }
             }
