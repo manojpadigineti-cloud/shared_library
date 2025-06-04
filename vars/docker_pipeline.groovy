@@ -54,10 +54,7 @@ def call ( Map config ) {
  def Sonar_Scan(SONAR_PASS) {
    return {
    sh """
-      mvn clean verify sonar:sonar \
-          -Dsonar.projectKey=i27eureka \
-          -Dsonar.host.url=http://23.251.151.105:9000 \
-          -Dsonar.login=${SONAR_PASS}
+      mvn clean verify sonar:sonar -Dsonar.projectKey=i27eureka
     """
    }
  }
