@@ -32,7 +32,8 @@ def call ( Map config ) {
                withSonarQubeEnv('Sonar-Server') {
                  Sonar_Scan().call()
                   }
-                  timeout(time: 2, unit: 'MINUTES') {
+                //  timeout(time: 2, unit: 'MINUTES')
+                {
                    waitForQualityGate abortPipeline: true
                 }
               }
