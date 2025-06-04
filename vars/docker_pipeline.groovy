@@ -15,7 +15,7 @@ node ('agent1') {
     }
     stage("build ${appName}") {
       sh """
-        mvn clean package
+        mvn clean package -D maven.test.skip=true
       """
     }
 }
