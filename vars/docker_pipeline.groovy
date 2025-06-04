@@ -18,7 +18,7 @@ def call ( Map config ) {
         }
        stage("build ${env.appName}") {
           script {
-          if (params.Code_Build == 'YES') {
+          if (params.Code_Build == 'YES' || params.Code_Scan == 'YES') {
                   Build().call()
             }
           else {
@@ -27,9 +27,13 @@ def call ( Map config ) {
            }
          }
        stage ("Code Scan for ${env.appName}") {
-            sh """
-            echo "Sonar Scan Stage"
-            """
+             script {
+               if (params.Code_Scan == 'YES') {
+                 withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_AUTH')]) {
+                 Sonar_Scan($SONAR_AUTH).call()
+                }
+              }
+            }
           }
         }
      }
@@ -37,8 +41,18 @@ def call ( Map config ) {
 
 
  // Methods
-  def Build () {
-    return {
-     sh 'mvn clean package -DskipTests'
-    }
+ def Build () {
+   return {
+    sh 'mvn clean package -DskipTests'
    }
+ }
+ def Sonar_Scan(SONAR_PASS) {
+   return {
+   sh """
+      mvn clean verify sonar:sonar \
+          -Dsonar.projectKey=i27eureka \
+          -Dsonar.host.url=http://23.251.151.105:9000 \
+          -Dsonar.login=${SONAR_PASS}
+    """
+   }
+ }
