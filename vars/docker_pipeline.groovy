@@ -1,7 +1,7 @@
 def call ( Map config ) {
   properties[(
     parameters[(
-      { choice(name: 'Deploy to', choices: ['Dev', 'QA', 'Stage', 'Prod'], description: 'Where to Deploy') }
+      { choice(name: 'Deploy to', choices: ['Dev', 'QA', 'Stage', 'Prod'], description: 'Where to Deploy the application') }
     )]
   )]
   def appName = config.appName
