@@ -31,6 +31,9 @@ def call ( Map config ) {
                if (params.Code_Scan == 'YES') {
                  withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_AUTH')]) {
                  Sonar_Scan(SONAR_AUTH).call()
+                   timeout(time: 2, unit: 'MINUTES') {
+                     waitForQualityGate abortPipeline: true
+                  }
                 }
               }
             }
