@@ -7,7 +7,6 @@ def call ( Map config ) {
         ])
     ])
 
-  // Methods Declaration
     node ('agent1') {
     // Global ENV
      env.appName = config.appName
