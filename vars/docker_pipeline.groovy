@@ -8,13 +8,6 @@ def call ( Map config ) {
     ])
 
   // Methods Declaration
-    def Build () {
-    return {
-     sh 'mvn clean package -DskipTests'
-    }
-   }
-
-
     node ('agent1') {
     // Global ENV
      env.appName = config.appName
@@ -27,7 +20,7 @@ def call ( Map config ) {
        stage("build ${env.appName}") {
           script {
           if (params.Code_Build == 'YES') {
-                  Build()
+                  Build().call()
             }
           else {
             echo "Skipping the build as ${params.Code_Build}"
@@ -41,3 +34,12 @@ def call ( Map config ) {
           }
         }
      }
+
+
+
+ // Methods
+  def Build () {
+    return {
+     sh 'mvn clean package -DskipTests'
+    }
+   }
