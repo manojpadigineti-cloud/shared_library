@@ -29,12 +29,10 @@ def call ( Map config ) {
        stage ("Code Scan for ${env.appName}") {
              script {
                if (params.Code_Scan == 'YES') {
-                 withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_AUTH')]) {
-                withSonarQubeEnv('Sonar-Server') {
-                 Sonar_Scan(SONAR_AUTH).call()
+               withSonarQubeEnv('Sonar-Server') {
+                 Sonar_Scan().call()
                    timeout(time: 2, unit: 'MINUTES') {
                      waitForQualityGate abortPipeline: true
-                     }
                   }
                 }
               }
@@ -51,7 +49,7 @@ def call ( Map config ) {
     sh 'mvn clean package -DskipTests'
    }
  }
- def Sonar_Scan(SONAR_PASS) {
+ def Sonar_Scan() {
    return {
    sh """
       mvn clean verify sonar:sonar -Dsonar.projectKey=i27eureka
