@@ -27,7 +27,7 @@ def call ( Map config ) {
        stage("build ${env.appName}") {
           script {
           if (params.Code_Build == 'YES') {
-                  Build().call()
+                  Build()
             }
           else {
             echo "Skipping the build as ${params.Code_Build}"
