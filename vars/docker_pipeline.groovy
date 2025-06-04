@@ -1,9 +1,9 @@
 def call ( Map config ) {
-  properties[(
-    parameters[(
-      { choice(name: 'Deploy to', choices: ['Dev', 'QA', 'Stage', 'Prod'], description: 'Where to Deploy the application') }
-    )]
-  )]
+    properties([
+        parameters([
+            choice(name: 'DEPLOY_ENV', choices: ['Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
+        ])
+    ])
   def appName = config.appName
     node ('agent1') {
         stage("checkout SCM") {
@@ -13,8 +13,13 @@ def call ( Map config ) {
         }
         stage("build ${appName}") {
           sh """
-            mvn clean package -D maven.test.skip=true
+            mvn clean package -DskipTests
           """
+        stage ("Code Scan for ${appName}") {
+            sh """
+            echo "Sonar Scan Stage"
+            """
+          }
         }
      }
  }
