@@ -1,4 +1,9 @@
 def call ( Map config ) {
+  properties[(
+    parameters[(
+      { choice(name: 'Deploy to', choices: ['Dev', 'QA', 'Stage', 'Prod'], description: 'Where to Deploy') }
+    )]
+  )]
   def appName = config.appName
   def gitrepo = "https://github.com/manojpadigineti-cloud/i27-eureka.git"
   pipeline {
