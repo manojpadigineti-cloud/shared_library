@@ -52,7 +52,8 @@ def call ( Map config ) {
  def Sonar_Scan() {
    return {
    sh """
-      mvn clean verify sonar:sonar -Dsonar.projectKey=i27eureka
+     mvn clean verify sonar:sonar \
+              -Dsonar.projectKey=i27eureka
     """
    }
  }
