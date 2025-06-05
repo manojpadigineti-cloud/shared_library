@@ -39,10 +39,10 @@ def call ( Map config ) {
                   timeout(time: 2, unit: 'MINUTES') {
                    waitForQualityGate abortPipeline: true
                 }
-              else {
+              }
+               else {
                  echo "Skipping the scan for ${params.Code_Build}"
                 }
-              }
             }
           }
         }
