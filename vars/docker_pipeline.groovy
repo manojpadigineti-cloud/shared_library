@@ -9,11 +9,14 @@ def call ( Map config ) {
     ])
 
    // Declare Credential Variables (Since env. is not allowed in Scripted pipeline, we will declare a variable name and use it dynamically in pipeline)
-   def GITCREDS = 'Github_Token_New'
+//    def GITCREDS = 'Github_Token_New'
 
     node ('agent1') {
     // Global ENV
      env.appName = config.appName
+     def GITCREDS = 'Github_Token_New'
+     def POM = readMavenPom file: 'pom.xml'
+     def ARTIFACT_FILE = /target/POM.name-POM.version.POM.packaging
 
        stage("checkout SCM") {
         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -73,11 +76,12 @@ def call ( Map config ) {
  }
 
  def Artifact_copy (){
-   def POM = readMavenPom file: 'pom.xml'
+//    def POM = readMavenPom file: 'pom.xml'
+//    def ARTIFACT_FILE = /target/POM.name-POM.version.POM.packaging
    echo POM.name
    echo POM.version
    echo POM.packaging
     sh """
-     cp $(pwd)/target/POM.name-POM.version.POM.packaging $(pwd)
+     cp ${ARTIFACT_FILE} .
     """
  }
