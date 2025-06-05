@@ -78,6 +78,7 @@ def call ( Map config ) {
    echo POM.name
    echo POM.version
    echo POM.packaging
-
+  sh """
   cp $(pwd)/target/POM.name-POM.version.POM.packaging $(pwd)
+  """
  }
