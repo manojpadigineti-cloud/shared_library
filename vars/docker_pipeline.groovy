@@ -3,7 +3,7 @@ def call ( Map config ) {
         parameters([
             choice(name: 'Code_Build', choices: ['NO', 'YES'], description: 'Building your code required'),
             choice(name: 'Code_Scan', choices: ['NO', 'YES'], description: 'Code Scan required'),
-            choice(name: 'copyartifact', choices: ['NO', 'YES'], description: 'Code Scan required'),
+            choice(name: 'copyartifact', choices: ['NO', 'YES'], description: 'Copy Artifact'),
             choice(name: 'DEPLOY_ENV', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
         ])
     ])
