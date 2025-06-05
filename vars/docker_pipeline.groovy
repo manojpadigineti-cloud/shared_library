@@ -50,7 +50,7 @@ def call ( Map config ) {
           script {
             if (params.copyartifact == 'YES') {
                def POM = readMavenPom file: 'pom.xml'
-               echo POM.name
+               sh 'pwd'
             }
           }
          }
