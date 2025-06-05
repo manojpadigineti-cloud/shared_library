@@ -10,8 +10,6 @@ def call ( Map config ) {
 
    // Declare Credential Variables (Since env. is not allowed in Scripted pipeline, we will declare a variable name and use it dynamically in pipeline)
    def GITCREDS = 'Github_Token_New'
-   def POM = readMavenPom file: 'pom.xml'
-
 
     node ('agent1') {
     // Global ENV
@@ -43,7 +41,7 @@ def call ( Map config ) {
                 }
               }
                else {
-                 echo "Skipping the scan for ${params.Code_Build}"
+                 echo "Skipping the scan for ${params.Code_Scan}"
                 }
             }
           }
@@ -51,6 +49,7 @@ def call ( Map config ) {
         stage("Copy Artifact of ${env.appName}") {
           script {
             if (params.copyartifact == 'YES') {
+               def POM = readMavenPom file: 'pom.xml'
                echo POM.name
             }
           }
