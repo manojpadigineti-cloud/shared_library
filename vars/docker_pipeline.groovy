@@ -32,12 +32,15 @@ def call ( Map config ) {
          }
        stage ("Code Scan for ${env.appName}") {
              script {
-               if (params.Code_Scan == 'YES') {
-               withSonarQubeEnv('Sonar-Server') {
+              if (params.Code_Scan == 'YES') {
+              withSonarQubeEnv('Sonar-Server') {
                  Sonar_Scan().call()
                  }
                   timeout(time: 2, unit: 'MINUTES') {
                    waitForQualityGate abortPipeline: true
+                }
+              else {
+                 echo "Skipping the scan for ${params.Code_Build}"
                 }
               }
             }
