@@ -74,11 +74,10 @@ def call ( Map config ) {
 
  def Artifact_copy (){
    def POM = readMavenPom file: 'pom.xml'
-   sh 'pwd ; ls -ltr'
    echo POM.name
    echo POM.version
    echo POM.packaging
-  sh """
-  cp $(pwd)/target/POM.name-POM.version.POM.packaging $(pwd)
-  """
+    sh """
+     cp $(pwd)/target/POM.name-POM.version.POM.packaging $(pwd)
+    """
  }
