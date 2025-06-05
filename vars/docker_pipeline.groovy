@@ -16,7 +16,7 @@ def call ( Map config ) {
      env.appName = config.appName
 
        stage("checkout SCM") {
-        withCredentials([gitUsernamePassword(credentialsId: 'GITCREDS', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials([gitUsernamePassword(credentialsId: '$GITCREDS', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
            checkout scm
          }
         }
