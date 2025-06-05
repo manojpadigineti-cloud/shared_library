@@ -80,6 +80,6 @@ def call ( Map config ) {
    echo POM.version
    echo POM.packaging
     sh """
-     cp ${ARTIFACT_FILE} .
+     cp -r ${ARTIFACT_FILE} .
     """
  }
