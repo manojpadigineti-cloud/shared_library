@@ -57,7 +57,6 @@ def call ( Map config ) {
      }
 
 
-
  // Methods
  def Build () {
    return {
@@ -78,4 +77,7 @@ def call ( Map config ) {
    sh 'pwd ; ls -ltr'
    echo POM.name
    echo POM.version
+   echo POM.packaging
+
+  // cp $(pwd)/target/
  }
