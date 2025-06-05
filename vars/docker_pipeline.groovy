@@ -15,8 +15,6 @@ def call ( Map config ) {
     // Global ENV
      env.appName = config.appName
      def GITCREDS = 'Github_Token_New'
-     def POM = readMavenPom file: 'pom.xml'
-     def ARTIFACT_FILE = /target/POM.name-POM.version.POM.packaging
 
        stage("checkout SCM") {
         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -76,8 +74,8 @@ def call ( Map config ) {
  }
 
  def Artifact_copy (){
-//    def POM = readMavenPom file: 'pom.xml'
-//    def ARTIFACT_FILE = /target/POM.name-POM.version.POM.packaging
+   def POM = readMavenPom file: 'pom.xml'
+   def ARTIFACT_FILE = /target/POM.name-POM.version.POM.packaging
    echo POM.name
    echo POM.version
    echo POM.packaging
