@@ -49,7 +49,7 @@ def call ( Map config ) {
         stage("Copy Artifact of ${env.appName}") {
           script {
             if (params.copyartifact == 'YES') {
-               Artifact_copy().call()
+               Artifact_copy()
             }
           }
          }
@@ -76,4 +76,6 @@ def call ( Map config ) {
  def Artifact_copy (){
    def POM = readMavenPom file: 'pom.xml'
    sh 'pwd ; ls -ltr'
+   echo POM.name
+   echo POM.version
  }
