@@ -3,12 +3,14 @@ def call ( Map config ) {
         parameters([
             choice(name: 'Code_Build', choices: ['NO', 'YES'], description: 'Building your code required'),
             choice(name: 'Code_Scan', choices: ['NO', 'YES'], description: 'Code Scan required'),
+            choice(name: 'copyartifact', choices: ['NO', 'YES'], description: 'Code Scan required'),
             choice(name: 'DEPLOY_ENV', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
         ])
     ])
 
    // Declare Credential Variables (Since env. is not allowed in Scripted pipeline, we will declare a variable name and use it dynamically in pipeline)
    def GITCREDS = 'Github_Token_New'
+   def POM = readMavenPom file: 'pom.xml'
 
 
     node ('agent1') {
@@ -45,6 +47,14 @@ def call ( Map config ) {
                 }
             }
           }
+
+        stage("Copy Artifact of ${env.appName}") {
+          script {
+            if (params.copyartifact == 'YES') {
+               echo POM.name
+            }
+          }
+         }
         }
      }
 
