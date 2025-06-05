@@ -21,7 +21,7 @@ def call ( Map config ) {
            checkout scm
          }
         }
-       stage("build ${env.appName}") {
+       stage("Build Application ${env.appName}") {
           script {
           if (params.Code_Build == 'YES' || params.Code_Scan == 'YES') {
                   Build().call()
@@ -75,7 +75,7 @@ def call ( Map config ) {
 
  def Artifact_copy (){
    def POM = readMavenPom file: 'pom.xml'
-   def ARTIFACT_FILE = "/target/${POM.name}-${POM.version}.${POM.packaging}"
+   def ARTIFACT_FILE = "/home/devops/workspace/I27-Eureka_main/target/${POM.name}-${POM.version}.${POM.packaging}"
    echo POM.name
    echo POM.version
    echo POM.packaging
