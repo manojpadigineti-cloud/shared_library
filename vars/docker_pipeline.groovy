@@ -7,12 +7,16 @@ def call ( Map config ) {
         ])
     ])
 
+   // Declare Credential Variables (Since env. is not allowed in Scripted pipeline, we will declare a variable name and use it dynamically in pipeline)
+   def GITCREDS = credentials ('Github_Token_New')
+
+
     node ('agent1') {
     // Global ENV
      env.appName = config.appName
 
        stage("checkout SCM") {
-        withCredentials([gitUsernamePassword(credentialsId: 'Github_Token_New', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+        withCredentials([gitUsernamePassword(credentialsId: 'GITCREDS', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
            checkout scm
          }
         }
@@ -31,9 +35,9 @@ def call ( Map config ) {
                if (params.Code_Scan == 'YES') {
                withSonarQubeEnv('Sonar-Server') {
                  Sonar_Scan().call()
-                  }
                   timeout(time: 2, unit: 'MINUTES') {
                    waitForQualityGate abortPipeline: true
+                  }
                 }
               }
             }
