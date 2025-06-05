@@ -75,11 +75,11 @@ def call ( Map config ) {
 
  def Artifact_copy (){
    def POM = readMavenPom file: 'pom.xml'
-//    def ARTIFACT_FILE = /target/POM.name-POM.version.POM.packaging
+   def ARTIFACT_FILE = "/target/${POM.name}-${POM.version}.${POM.packaging}"
    echo POM.name
    echo POM.version
    echo POM.packaging
-//     sh """
-//      cp ${ARTIFACT_FILE} .
-//     """
+    sh """
+     cp ${ARTIFACT_FILE} .
+    """
  }
