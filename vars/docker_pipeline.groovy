@@ -49,8 +49,7 @@ def call ( Map config ) {
         stage("Copy Artifact of ${env.appName}") {
           script {
             if (params.copyartifact == 'YES') {
-               def POM = readMavenPom file: 'pom.xml'
-               sh 'pwd ; ls -ltr'
+               Artifact_copy().call()
             }
           }
          }
@@ -72,4 +71,9 @@ def call ( Map config ) {
               -Dsonar.projectKey=i27eureka
     """
    }
+ }
+
+ def Artifact_copy (){
+   def POM = readMavenPom file: 'pom.xml'
+   sh 'pwd ; ls -ltr'
  }
