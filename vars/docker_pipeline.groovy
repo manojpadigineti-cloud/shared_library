@@ -13,12 +13,12 @@ def call ( Map config ) {
      env.appName = config.appName
      def GITCREDS = 'Github_Token_New'
 
-       stage("checkout SCM") {
+       stage ("checkout SCM") {
         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
            checkout scm
          }
         }
-       stage("Build Application ${env.appName}") {
+       stage ("Build Application ${env.appName}") {
           script {
           if (params.Code_Build == 'YES' || params.Code_Scan == 'YES') {
                   Build().call()
@@ -43,8 +43,7 @@ def call ( Map config ) {
                 }
             }
           }
-
-        stage("Copy Artifact of ${env.appName}") {
+        stage ("Copy Artifact of ${env.appName}") {
           script {
             if (params.copyartifact == 'YES') {
                Artifact_copy()
