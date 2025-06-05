@@ -8,9 +8,6 @@ def call ( Map config ) {
         ])
     ])
 
-   // Declare Credential Variables (Since env. is not allowed in Scripted pipeline, we will declare a variable name and use it dynamically in pipeline)
-//    def GITCREDS = 'Github_Token_New'
-
     node ('agent1') {
     // Global ENV
      env.appName = config.appName
