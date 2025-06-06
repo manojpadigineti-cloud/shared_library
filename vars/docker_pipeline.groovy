@@ -102,7 +102,7 @@ def call ( Map config ) {
    sh """
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r ${ARTIFACT_FILE} devops@${IPADDRESS}:/home/devops
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r Dockerfile devops@${IPADDRESS}:/home/devops
-     sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker build --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=${APPLICATION_PORT} -t ${REPO_NAME}/${env.appName}:${GIT_COMMIT}  .
+     sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker build --no-cache --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=${APPLICATION_PORT} -t ${REPO_NAME}/${env.appName}:${GIT_COMMIT}  .
      sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
      sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker push ${REPO_NAME}/${env.appName}:${GIT_COMMIT}
     """
