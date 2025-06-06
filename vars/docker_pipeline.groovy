@@ -7,14 +7,15 @@ def call ( Map config ) {
             choice(name: 'DEPLOY_ENV', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
         ])
     ])
-     def IPADDRESS = '10.2.0.2'
-     def DOCKER_CREDS = 'Docker_Server'
-     APPLICATION_PORT = config.port
+
 
     node ('agent1') {
     // Global ENV
      env.appName = config.appName
      def GITCREDS = 'Github_Token_New'
+     def IPADDRESS = '10.2.0.2'
+     def DOCKER_CREDS = 'Docker_Server'
+     def APPLICATION_PORT = config.port
 
        stage ("checkout SCM") {
         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -46,11 +47,11 @@ def call ( Map config ) {
                 }
             }
           }
-        stage ("Copy Artifact of ${env.appName}") {
+        stage ("Docker Build_Push of Application ${env.appName}") {
           script {
             if (params.Docker_Build_PUSH == 'YES') {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-               Docker_Build_Push()
+               Docker_Build_Push(IPADDRESS, APPLICATION_PORT)
              }
             }
           }
@@ -75,12 +76,12 @@ def call ( Map config ) {
    }
  }
 
- def Docker_Build_Push (){
+ def Docker_Build_Push (IPADDRESS, APPLICATION_PORT){
    def POM = readMavenPom file: 'pom.xml'
    def ARTIFACT_FILE = "$WORKSPACE/target/${POM.name}-${POM.version}.${POM.packaging}"
    def JAR_SOURCE = "${POM.name}-${POM.version}.${POM.packaging}"
     sh """
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r ${ARTIFACT_FILE} devops@${IPADDRESS}:/home/devops/
-     docker build --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=$APPLICATION_PORT -t ${env.appName}-${env.GIT_COMMIT}  .
+     docker build --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=${APPLICATION_PORT} -t ${env.appName}-${env.GIT_COMMIT}  .
     """
  }
