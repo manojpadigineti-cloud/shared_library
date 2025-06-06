@@ -28,12 +28,12 @@ def call ( Map config ) {
 
        stage ("checkout SCM") {
 //         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-//            checkout scm
+//            checkout scm // In this you wont get commit id
 //          }
          script {
             withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-              def scmVars = checkout scm
-              env.GIT_COMMIT = scmVars.GIT_COMMIT
+              def FETCH_COMMIT_ID = checkout scm
+              env.GIT_COMMIT = FETCH_COMMIT_ID.GIT_COMMIT
               echo "Checked out commit: ${env.GIT_COMMIT}"
             }
           }
