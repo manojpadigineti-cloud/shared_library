@@ -51,7 +51,7 @@ def call ( Map config ) {
           script {
             if (params.Docker_Build_PUSH == 'YES') {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-               Docker_Build_Push(IPADDRESS, APPLICATION_PORT)
+               Docker_Build_Push(IPADDRESS, APPLICATION_PORT, PASSWORD)
              }
             }
           }
@@ -76,7 +76,7 @@ def call ( Map config ) {
    }
  }
 
- def Docker_Build_Push (IPADDRESS, APPLICATION_PORT){
+ def Docker_Build_Push (IPADDRESS, APPLICATION_PORT, PASSWORD){
    def POM = readMavenPom file: 'pom.xml'
    def ARTIFACT_FILE = "$WORKSPACE/target/${POM.name}-${POM.version}.${POM.packaging}"
    def JAR_SOURCE = "${POM.name}-${POM.version}.${POM.packaging}"
