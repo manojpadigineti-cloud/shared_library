@@ -15,7 +15,7 @@ def call ( Map config ) {
      def GITCREDS = 'Github_Token_New'
      def IPADDRESS = '10.2.0.2'
      def DOCKER_CREDS = 'Docker_Server'
-     def APPLICATION_PORT = config.port
+     def port = config.port
 
        stage ("checkout SCM") {
         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -51,7 +51,7 @@ def call ( Map config ) {
           script {
             if (params.Docker_Build_PUSH == 'YES') {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-               Docker_Build_Push(IPADDRESS, APPLICATION_PORT, PASSWORD)
+               Docker_Build_Push(IPADDRESS, env.port, PASSWORD)
              }
             }
           }
