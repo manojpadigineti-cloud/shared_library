@@ -15,7 +15,8 @@ def call ( Map config ) {
      def GITCREDS = 'Github_Token_New'
      def IPADDRESS = '10.2.0.2'
      def DOCKER_CREDS = 'Docker_Server'
-     def port = config.port
+     env.port = config.port
+
 
        stage ("checkout SCM") {
         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -80,8 +81,8 @@ def call ( Map config ) {
    def POM = readMavenPom file: 'pom.xml'
    def ARTIFACT_FILE = "$WORKSPACE/target/${POM.name}-${POM.version}.${POM.packaging}"
    def JAR_SOURCE = "${POM.name}-${POM.version}.${POM.packaging}"
-    sh """
+    sh '''
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r ${ARTIFACT_FILE} devops@${IPADDRESS}:/home/devops/
      sshpass -p '${PASSWORD}' docker build --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=${APPLICATION_PORT} -t ${env.appName}-${env.GIT_COMMIT}  .
-    """
+    '''
  }
