@@ -15,7 +15,7 @@ def call ( Map config ) {
      def GITCREDS = 'Github_Token_New'
      def IPADDRESS = '10.2.0.2'
      def DOCKER_CREDS = 'Docker_Server'
-     def DOCKER_REPO = manojpadigineti
+     def DOCKER_REPO = 'manojpadigineti'
      env.port = config.port
 
 
@@ -53,6 +53,7 @@ def call ( Map config ) {
           script {
             if (params.Docker_Build_PUSH == 'YES') {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+
                Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.GIT_COMMIT)
              }
             }
