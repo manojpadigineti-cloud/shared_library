@@ -81,8 +81,9 @@ def call ( Map config ) {
    def POM = readMavenPom file: 'pom.xml'
    def ARTIFACT_FILE = "$WORKSPACE/target/${POM.name}-${POM.version}.${POM.packaging}"
    def JAR_SOURCE = "${POM.name}-${POM.version}.${POM.packaging}"
-    sh """
-     sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r ${ARTIFACT_FILE} devops@${IPADDRESS}:/home/devops/
-     sshpass -p '${PASSWORD}' docker build --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=${APPLICATION_PORT} -t ${env.appName}-${env.GIT_COMMIT}  .
+   sh """
+     scp -o StrictHostKeyChecking=no -r ${ARTIFACT_FILE} devops@${IPADDRESS}:/home/devops
+     scp -o StrictHostKeyChecking=no -r Dockerfile devops@${IPADDRESS}:/home/devops
+     sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker build --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=${APPLICATION_PORT} -t ${env.appName}-${env.GIT_COMMIT}  .
     """
  }
