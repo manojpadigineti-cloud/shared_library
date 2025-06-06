@@ -7,15 +7,14 @@ def call ( Map config ) {
             choice(name: 'DEPLOY_ENV', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
         ])
     ])
-
-       // Global ENV
-     env.appName = config.appName
-     def GITCREDS = 'Github_Token_New'
-     APPLICATION_PORT = config.port
      def IPADDRESS = '10.2.0.2'
      def DOCKER_CREDS = 'Docker_Server'
+     APPLICATION_PORT = config.port
 
     node ('agent1') {
+    // Global ENV
+     env.appName = config.appName
+     def GITCREDS = 'Github_Token_New'
 
        stage ("checkout SCM") {
         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
