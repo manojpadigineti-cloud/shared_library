@@ -36,6 +36,7 @@ def call ( Map config ) {
               env.GIT_COMMIT = scmVars.GIT_COMMIT
               echo "Checked out commit: ${env.GIT_COMMIT}"
             }
+          }
         }
        stage ("Build Application ${env.appName}") {
           script {
