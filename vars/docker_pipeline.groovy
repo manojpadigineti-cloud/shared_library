@@ -16,7 +16,7 @@ def call ( Map config ) {
     ])
 
 
-    node ('agent1') {
+   node ('agent1') {
     // Global ENV
      env.appName = config.appName
      def GITCREDS = 'Github_Token_New'
@@ -42,7 +42,7 @@ def call ( Map config ) {
         }
        stage ("Build Application ${env.appName}") {
           script {
-          if (params.Code_Build == 'YES' || params.Code_Scan == 'YES') {
+          if (params.Code_Build == 'YES' || params.Code_Scan == 'YES' || params.Docker_Deploy == 'YES') {
                   Build().call()
             }
           else {
@@ -52,7 +52,7 @@ def call ( Map config ) {
          }
        stage ("Code Scan for ${env.appName}") {
              script {
-              if (params.Code_Scan == 'YES') {
+              if (params.Code_Scan == 'YES' || params.Docker_Deploy == 'YES') {
               withSonarQubeEnv('Sonar-Server') {
                  Sonar_Scan().call()
                  }
@@ -67,7 +67,7 @@ def call ( Map config ) {
           }
         stage ("Docker Build_Push of Application ${env.appName}") {
           script {
-            if (params.Docker_Build_PUSH == 'YES') {
+            if (params.Docker_Build_PUSH == 'YES' || params.Docker_Deploy == 'YES') {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
               withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.GIT_COMMIT, DOCKER_PSW, DOCKER_USR, IMAGE_REGISTRY)
@@ -76,6 +76,11 @@ def call ( Map config ) {
             }
           }
          }
+
+         stage ("Docker_Deploy of Application ${env.appName}") {
+          if (params.Docker_Deploy == 'YES') {
+
+          }
         }
      }
 
@@ -107,4 +112,11 @@ def call ( Map config ) {
      sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} podman login docker.io -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
      sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} podman push ${IMAGE_REGISTRY}/${REPO_NAME}/${env.appName}:${GIT_COMMIT}
     """
+ }
+
+ def Docker_Deploy () {
+  sh """
+    sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT}
+
+  """
  }
