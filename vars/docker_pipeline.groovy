@@ -23,7 +23,7 @@ def call ( Map config ) {
      def IPADDRESS = '10.2.0.2'
      def DOCKER_CREDS = 'Docker_Server'
      def DOCKER_REPO = 'manojpadigineti'
-     env.COMMIT = GIT_COMMIT
+     env.COMMIT = 'GIT_COMMIT'
      env.port = config.port
 
 
