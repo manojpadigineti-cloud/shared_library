@@ -15,6 +15,7 @@ def call ( Map config ) {
      def GITCREDS = 'Github_Token_New'
      def IPADDRESS = '10.2.0.2'
      def DOCKER_CREDS = 'Docker_Server'
+     def DOCKER_REPO = manojpadigineti
      env.port = config.port
 
 
@@ -52,7 +53,7 @@ def call ( Map config ) {
           script {
             if (params.Docker_Build_PUSH == 'YES') {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-               Docker_Build_Push(IPADDRESS, env.port, PASSWORD)
+               Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.GIT_COMMIT)
              }
             }
           }
@@ -77,13 +78,13 @@ def call ( Map config ) {
    }
  }
 
- def Docker_Build_Push (IPADDRESS, APPLICATION_PORT, PASSWORD){
+ def Docker_Build_Push (IPADDRESS, APPLICATION_PORT, PASSWORD, REPO_NAME, GIT_COMMIT){
    def POM = readMavenPom file: 'pom.xml'
    def ARTIFACT_FILE = "$WORKSPACE/target/${POM.name}-${POM.version}.${POM.packaging}"
    def JAR_SOURCE = "${POM.name}-${POM.version}.${POM.packaging}"
    sh """
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r ${ARTIFACT_FILE} devops@${IPADDRESS}:/home/devops
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r Dockerfile devops@${IPADDRESS}:/home/devops
-     sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker build --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=${APPLICATION_PORT} -t ${env.appName}-${env.GIT_COMMIT}  .
+     sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker build --build-arg JAR_SOURCE=${JAR_SOURCE} --build-arg PORT=${APPLICATION_PORT} -t ${REPO_NAME}/${env.appName}:${GIT_COMMIT}  .
     """
  }
