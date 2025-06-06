@@ -54,7 +54,7 @@ def call ( Map config ) {
             if (params.Docker_Build_PUSH == 'YES') {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 
-               Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.GIT_COMMIT)
+               Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, GIT_COMMIT)
              }
             }
           }
