@@ -13,7 +13,7 @@ def call ( Map config ) {
      env.appName = config.appName
      def GITCREDS = 'Github_Token_New'
      APPLICATION_PORT = config.port
-     def IPADDRESS = 10.2.0.2
+     def IPADDRESS = "10.2.0.2"
 
        stage ("checkout SCM") {
         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
