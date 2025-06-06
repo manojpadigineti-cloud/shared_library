@@ -27,9 +27,15 @@ def call ( Map config ) {
 
 
        stage ("checkout SCM") {
-        withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-           checkout scm
-         }
+//         withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+//            checkout scm
+//          }
+         script {
+            withCredentials([gitUsernamePassword(credentialsId: GITCREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+              def scmVars = checkout scm
+              env.GIT_COMMIT = scmVars.GIT_COMMIT
+              echo "Checked out commit: ${env.GIT_COMMIT}"
+            }
         }
        stage ("Build Application ${env.appName}") {
           script {
