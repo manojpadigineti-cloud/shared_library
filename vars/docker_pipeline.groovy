@@ -23,7 +23,7 @@ def call ( Map config ) {
      def IPADDRESS = '10.2.0.2'
      def DOCKER_CREDS = 'Docker_Server'
      def DOCKER_REPO = 'manojpadigineti'
-     env.COMMIT = 'GIT_COMMIT'
+     env.COMMIT = env.GIT_COMMIT
      env.port = config.port
 
 
@@ -62,7 +62,7 @@ def call ( Map config ) {
             if (params.Docker_Build_PUSH == 'YES') {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 
-               Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, COMMIT)
+               Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.COMMIT)
              }
             }
           }
