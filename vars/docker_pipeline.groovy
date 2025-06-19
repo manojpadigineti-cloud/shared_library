@@ -11,7 +11,7 @@ def call ( Map config ) {
             choice(name: 'Code_Build', choices: ['NO', 'YES'], description: 'Building your code required'),
             choice(name: 'Code_Scan', choices: ['NO', 'YES'], description: 'Code Scan required'),
             choice(name: 'Docker_Build_PUSH', choices: ['NO', 'YES'], description: 'Docker Build and Push to Repository'),
-            choice(name: 'DEPLOY_ENV', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
+            choice(name: 'Docker_Deploy', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
         ])
     ])
 
@@ -25,6 +25,7 @@ def call ( Map config ) {
      def DOCKER_HUB = 'DOCKER_HUB_CREDS'
      def DOCKER_REPO = 'manojpadigineti'
      env.port = config.port
+     env.hostport = config.hostport
      def IMAGE_REGISTRY = 'docker.io'
 
 
@@ -42,7 +43,7 @@ def call ( Map config ) {
         }
        stage ("Build Application ${env.appName}") {
           script {
-          if (params.Code_Build == 'YES' || params.Code_Scan == 'YES' || params.Docker_Deploy == 'YES') {
+          if (params.Code_Build == 'YES' || params.Code_Scan == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)) {
                   Build().call()
             }
           else {
@@ -52,7 +53,7 @@ def call ( Map config ) {
          }
        stage ("Code Scan for ${env.appName}") {
              script {
-              if (params.Code_Scan == 'YES' || params.Docker_Deploy == 'YES') {
+              if (params.Code_Scan == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)) {
               withSonarQubeEnv('Sonar-Server') {
                  Sonar_Scan().call()
                  }
@@ -67,7 +68,7 @@ def call ( Map config ) {
           }
         stage ("Docker Build_Push of Application ${env.appName}") {
           script {
-            if (params.Docker_Build_PUSH == 'YES' || params.Docker_Deploy == 'YES') {
+            if (params.Docker_Build_PUSH == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)) {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
               withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.GIT_COMMIT, DOCKER_PSW, DOCKER_USR, IMAGE_REGISTRY)
@@ -77,9 +78,15 @@ def call ( Map config ) {
           }
          }
 
-         stage ("Docker_Deploy of Application ${env.appName}") {
-          if (params.Docker_Deploy == 'YES') {
-
+        stage ("Docker Deploy of Application ${env.appName}") {
+        script {
+          if (['Dev', 'QA'].contains(params.Docker_Deploy)) {
+            withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+              withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
+                 Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
+               }
+              }
+            }
           }
         }
      }
@@ -114,9 +121,8 @@ def call ( Map config ) {
     """
  }
 
- def Docker_Deploy () {
+ def Docker_Deployment (PASSWORD, IPADDRESS, APPNAME, ENVIRONMENT, HOSTPORT, CONTAINERPORT, IMAGE_REGISTRY, REPO_NAME, GIT_COMMIT) {
   sh """
-    sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT}
-
+    sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT} -p ${HOSTPORT}:${CONTAINERPORT} ${IMAGE_REGISTRY}/${REPO_NAME}/${APPNAME}:${GIT_COMMIT}
   """
  }
