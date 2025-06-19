@@ -53,7 +53,7 @@ def call ( Map config ) {
          }
        stage ("Code Scan for ${env.appName}") {
              script {
-              if (params.Code_Scan == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)) {
+              if (params.Code_Scan == 'YES') { //|| ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)
               withSonarQubeEnv('Sonar-Server') {
                  Sonar_Scan().call()
                  }
