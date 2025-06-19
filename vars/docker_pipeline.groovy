@@ -127,6 +127,8 @@ def call ( Map config ) {
        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker stop ${APPNAME}-${ENVIRONMENT}
        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker rm ${APPNAME}-${ENVIRONMENT}
        echo "container found running... Stopped and removed the container successfully!!!!"
+       sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT} -p ${HOSTPORT}:${CONTAINERPORT} ${IMAGE_REGISTRY}/${REPO_NAME}/${APPNAME}:${GIT_COMMIT}
+       echo "Created the new container!!!!!!!"
       """
     } catch(Exception err) {
        echo "error occured ${err.message}... So the container is not running!!!!.... Proceeding with creating the container"
