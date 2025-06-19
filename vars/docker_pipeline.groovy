@@ -90,7 +90,7 @@ def call ( Map config ) {
           }
         }
      }
-
+  }
 
  // Methods
  def Build () {
@@ -126,4 +126,3 @@ def call ( Map config ) {
     sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT} -p ${HOSTPORT}:${CONTAINERPORT} ${IMAGE_REGISTRY}/${REPO_NAME}/${APPNAME}:${GIT_COMMIT}
   """
   }
- }
