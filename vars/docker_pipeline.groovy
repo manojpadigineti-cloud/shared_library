@@ -123,7 +123,8 @@ def call ( Map config ) {
 
  def Docker_Deployment (PASSWORD, IPADDRESS, APPNAME, ENVIRONMENT, HOSTPORT, CONTAINERPORT, IMAGE_REGISTRY, REPO_NAME, GIT_COMMIT) {
   sh """
-   sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} ' try {
+   sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} '
+   try {
      docker stop ${APPNAME}-${ENVIRONMENT} && docker rm -f ${APPNAME}-${ENVIRONMENT}
      echo "container found running... Stopped and removed the container successfully!!!!"
     } catch(err) {
