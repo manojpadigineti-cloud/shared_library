@@ -1,4 +1,4 @@
-// Pluging require:
+// Plugins required:
 //  - Pipeline Utility Steps : To read POM in jenkins
 //  - Sonarqube Plugin
 //  - Blue Ocean Plugin
