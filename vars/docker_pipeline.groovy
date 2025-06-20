@@ -92,7 +92,7 @@ def call ( Map config ) {
         
         stage ("Docker Deploy to ${params.Docker_Deploy} of Application ${env.appName}") {
           script {
-            if (params.Docker_Deploy == 'Stage' && BRANCH_NAME == 'release*') {
+            if (params.Docker_Deploy == 'Stage' && env.BRANCH_NAME ==~ /^release.*/) {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
