@@ -78,7 +78,7 @@ def call ( Map config ) {
           }
          }
 
-        stage ("Docker Deploy of Application ${env.appName} to ${params.Docker_Deploy}") {
+        stage ("Docker Deploy to ${params.Docker_Deploy} of Application ${env.appName}" {
           script {
             if (['Dev', 'QA'].contains(params.Docker_Deploy)) {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -90,7 +90,7 @@ def call ( Map config ) {
             }
           }
         
-        stage ("Docker Deploy of Application ${env.appName} to ${params.Docker_Deploy}") {
+        stage ("Docker Deploy to ${params.Docker_Deploy} of Application ${env.appName}") {
           script {
             if (params.Docker_Deploy == 'Stage' && BRANCH_NAME == 'release*') {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -104,7 +104,7 @@ def call ( Map config ) {
             }
           }
         }
-        stage ("Docker Deploy of Application ${env.appName} to ${params.Docker_Deploy}") {
+        stage ("Docker Deploy to ${params.Docker_Deploy} of Application ${env.appName} ") {
           script {
             if (params.Docker_Deploy == 'Prod' && TAG_NAME == 'v*') {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
