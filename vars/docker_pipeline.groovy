@@ -78,14 +78,43 @@ def call ( Map config ) {
           }
          }
 
-        stage ("Docker Deploy of Application ${env.appName}") {
-        script {
-          if (['Dev', 'QA'].contains(params.Docker_Deploy)) {
-            withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-              withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
-                 Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
-               }
+        stage ("Docker Deploy of Application ${env.appName} to ${params.Docker_Deploy}") {
+          script {
+            if (['Dev', 'QA'].contains(params.Docker_Deploy)) {
+              withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
+                  Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
+                }
+                }
               }
+            }
+          }
+        
+        stage ("Docker Deploy of Application ${env.appName} to ${params.Docker_Deploy}") {
+          script {
+            if (params.Docker_Deploy == 'Stage' && BRANCH_NAME == 'release*') {
+              withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
+                  Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
+                  }
+                }
+              }
+            else {
+              echo "Branch is ${BRANCH_NAME}... Please create a branch with name release"
+            }
+          }
+        }
+        stage ("Docker Deploy of Application ${env.appName} to ${params.Docker_Deploy}") {
+          script {
+            if (params.Docker_Deploy == 'Prod' && TAG_NAME == 'v*') {
+              withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
+                  Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
+                  }
+                }
+              }
+            else {
+              echo "Create a tag to deploy to production"
             }
           }
         }
