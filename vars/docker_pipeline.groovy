@@ -106,7 +106,7 @@ def call ( Map config ) {
         }
         stage ("Docker Deploy to ${params.Docker_Deploy} of Application ${env.appName}") {
           script {
-            if (params.Docker_Deploy == 'Prod' && TAG_NAME == 'v*') {
+            if (params.Docker_Deploy == 'Prod' && env.TAG_NAME ==~ /^v.*/) {    //"${env.TAG_NAME}".startsWith('v') --  Another way for tag declaration
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
