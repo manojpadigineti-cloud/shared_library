@@ -48,7 +48,7 @@ def call ( Map config ) {
             }
           else {
             echo "Skipping the build as ${params.Code_Build}"
-            }
+               }
            }
          }
        stage ("Code Scan for ${env.appName}") {
@@ -114,7 +114,7 @@ def call ( Map config ) {
                 }
               }
             else {
-              echo "Create a tag to deploy to production"
+              echo "Create a tag with name ${TAG_NAME} to deploy to production"
             }
           }
         }
