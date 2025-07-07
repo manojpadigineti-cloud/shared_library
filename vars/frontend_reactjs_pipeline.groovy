@@ -125,7 +125,7 @@ def call ( Map config ) {
    def ARTIFACT_FILE = "${WORKSPACE}/*"
    sh """
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r ${ARTIFACT_FILE} devops@${IPADDRESS}:/home/devops
-     sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker build --no-cache --build-arg PORT=${APPLICATION_PORT} --build-arg SRC_CODE=${ARTIFACT_FILE} -t ${IMAGE_REGISTRY}/${REPO_NAME}/${env.appName}:${GIT_COMMIT}  .
+     sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker build --no-cache --build-arg PORT=${APPLICATION_PORT} -t ${IMAGE_REGISTRY}/${REPO_NAME}/${env.appName}:${GIT_COMMIT}  .
      sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} podman login docker.io -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
      sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} podman push ${IMAGE_REGISTRY}/${REPO_NAME}/${env.appName}:${GIT_COMMIT}
     """
