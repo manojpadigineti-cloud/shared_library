@@ -8,7 +8,6 @@
 def call ( Map config ) {
     properties([
         parameters([
-            choice(name: 'Code_Scan', choices: ['NO', 'YES'], description: 'Code Scan required'),
             choice(name: 'Docker_Build_PUSH', choices: ['NO', 'YES'], description: 'Docker Build and Push to Repository'),
             choice(name: 'Docker_Deploy', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
         ])
