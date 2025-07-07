@@ -131,14 +131,13 @@ def call ( Map config ) {
    return {
    sh """
     sonar-scanner \
-      -Dsonar.projectKey=I27-clothing \
-      -Dsonar.sources=.
+      -Dsonar.projectKey=I27-clothing
     """
    }
  }
 
  def Docker_Build_Push (IPADDRESS, APPLICATION_PORT, PASSWORD, REPO_NAME, GIT_COMMIT, DOCKER_PASSWORD, DOCKER_USERNAME, IMAGE_REGISTRY){
-   def ARTIFACT_FILE = "$WORKSPACE"
+   def ARTIFACT_FILE = "${WORKSPACE}"
    sh """
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r ${ARTIFACT_FILE} devops@${IPADDRESS}:/home/devops
      sshpass -p '${PASSWORD}' scp -o StrictHostKeyChecking=no -r Dockerfile devops@${IPADDRESS}:/home/devops
