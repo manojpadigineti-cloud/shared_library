@@ -55,7 +55,7 @@ def call ( Map config ) {
              script {
               if (params.Code_Scan == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)) {
               withSonarQubeEnv('Sonar-Server') {
-                 Sonar_Scan().call()
+                 Sonar_Scan(env.appName).call()
                  }
                   timeout(time: 2, unit: 'MINUTES') {
                    waitForQualityGate abortPipeline: true
@@ -138,11 +138,11 @@ def call ( Map config ) {
    }
  }
 
- def Sonar_Scan() {
+ def Sonar_Scan(APP_NAME) {
    return {
    sh """
      mvn clean verify sonar:sonar \
-              -Dsonar.projectKey=i27eureka
+              -Dsonar.projectKey=${APP_NAME}
     """
    }
  }
