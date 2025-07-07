@@ -40,21 +40,6 @@ def call ( Map config ) {
             }
           }
         }
-       stage ("Code Scan for ${env.appName}") {
-             script {
-              if (params.Code_Scan == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)) {
-              withSonarQubeEnv('Sonar-Server-2') {
-                 Sonar_Scan().call()
-                 }
-                  timeout(time: 2, unit: 'MINUTES') {
-                   waitForQualityGate abortPipeline: true
-                }
-              }
-               else {
-                 echo "Skipping the scan for ${params.Code_Scan}"
-                }
-            }
-          }
         stage ("Docker Build_Push of Application ${env.appName}") {
           script {
             if (params.Docker_Build_PUSH == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)) {
