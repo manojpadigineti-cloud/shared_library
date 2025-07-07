@@ -9,7 +9,7 @@ def call ( Map config ) {
     properties([
         parameters([
             choice(name: 'Docker_Build_PUSH', choices: ['NO', 'YES'], description: 'Docker Build and Push to Repository'),
-            choice(name: 'Docker_Deploy', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
+            choice(name: 'Docker_Deploy', choices: ['N/A','dev', 'test', 'stage', 'prod'], description: 'Where to deploy the application')
         ])
     ])
 
@@ -41,7 +41,7 @@ def call ( Map config ) {
         }
         stage ("Docker Build_Push of Application ${env.appName}") {
           script {
-            if (params.Docker_Build_PUSH == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Docker_Deploy)) {
+            if (params.Docker_Build_PUSH == 'YES' || ['dev', 'test', 'stage', 'prod'].contains(params.Docker_Deploy)) {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
               withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.GIT_COMMIT, DOCKER_PSW, DOCKER_USR, IMAGE_REGISTRY)
@@ -51,9 +51,9 @@ def call ( Map config ) {
           }
          }
 
-        stage ("Deploy to Dev of ${env.appName}") {
+        stage ("Deploy to dev of ${env.appName}") {
           script {
-            if (params.Docker_Deploy == 'Dev') {
+            if (params.Docker_Deploy == 'dev') {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
@@ -62,9 +62,9 @@ def call ( Map config ) {
               }
             }
           }
-        stage ("Deploy to QA of ${env.appName}") {
+        stage ("Deploy to test of ${env.appName}") {
           script {
-            if (params.Docker_Deploy == 'QA') {
+            if (params.Docker_Deploy == 'test') {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
@@ -73,9 +73,9 @@ def call ( Map config ) {
               }
             }
           }
-        stage ("Deploy to Stage of ${env.appName}") {
+        stage ("Deploy to stage of ${env.appName}") {
           script {
-            if (params.Docker_Deploy == 'Stage' && env.BRANCH_NAME ==~ /^release.*/) {
+            if (params.Docker_Deploy == 'stage' && env.BRANCH_NAME ==~ /^release.*/) {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
@@ -87,9 +87,9 @@ def call ( Map config ) {
             }
           }
         }
-        stage ("Deploy to Prod of ${env.appName}") {
+        stage ("Deploy to prod of ${env.appName}") {
           script {
-            if (params.Docker_Deploy == 'Prod' && env.TAG_NAME ==~ /^v.*/) {    //"${env.TAG_NAME}".startsWith('v') --  Another way for tag declaration
+            if (params.Docker_Deploy == 'prod' && env.TAG_NAME ==~ /^v.*/) {    //"${env.TAG_NAME}".startsWith('v') --  Another way for tag declaration
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Docker_Deployment (PASSWORD, IPADDRESS, env.appName, params.Docker_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
@@ -136,13 +136,13 @@ def call ( Map config ) {
        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker stop ${APPNAME}-${ENVIRONMENT}
        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker rm ${APPNAME}-${ENVIRONMENT}
        echo "container found running... Stopped and removed the container successfully!!!!"
-       sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT} -p ${HOSTPORT}:${CONTAINERPORT} --env START=start:${ENVIRONMENT} ${IMAGE_REGISTRY}/${REPO_NAME}/${APPNAME}:${GIT_COMMIT}
+       sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT} --env START=start:${ENVIRONMENT} -p ${HOSTPORT}:${CONTAINERPORT} ${IMAGE_REGISTRY}/${REPO_NAME}/${APPNAME}:${GIT_COMMIT}
        echo "Created the new container!!!!!!!"
       """
     } catch(Exception err) {
        echo "error occured ${err.message}... So the container is not running!!!!.... Proceeding with creating the container"
        sh """
-        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT} -p ${HOSTPORT}:${CONTAINERPORT} --env START=start:${ENVIRONMENT} ${IMAGE_REGISTRY}/${REPO_NAME}/${APPNAME}:${GIT_COMMIT}
+        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT} --env START=start:${ENVIRONMENT} -p ${HOSTPORT}:${CONTAINERPORT} ${IMAGE_REGISTRY}/${REPO_NAME}/${APPNAME}:${GIT_COMMIT}
        """
     }
       //sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} docker run -dit --name ${APPNAME}-${ENVIRONMENT} -p ${HOSTPORT}:${CONTAINERPORT} ${IMAGE_REGISTRY}/${REPO_NAME}/${APPNAME}:${GIT_COMMIT}
