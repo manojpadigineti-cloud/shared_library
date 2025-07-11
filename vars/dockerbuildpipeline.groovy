@@ -15,7 +15,8 @@ def call ( Map config ) {
 
 
    node {
-    docker.image('node:16').inside {
+   def nodeImage = docker.image('node:16')
+   nodeImage.inside {
     // Global ENV
      env.appName = config.appName
      def GITCREDS = 'Github_Token_New'
