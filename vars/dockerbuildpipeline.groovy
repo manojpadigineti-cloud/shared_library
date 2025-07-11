@@ -15,8 +15,6 @@ def call ( Map config ) {
 
 
    node {
-   def nodeImage = docker.image('node:16')
-   nodeImage.inside {
     // Global ENV
      env.appName = config.appName
      def GITCREDS = 'Github_Token_New'
@@ -42,11 +40,14 @@ def call ( Map config ) {
           }
         }
         stage ("Docker Build_Push of Application ${env.appName}") {
+           def nodeImage = docker.image('node:16')
+              nodeImage.inside {
           script {
             if (params.Docker_Build_PUSH == 'YES' || ['dev', 'test', 'stage', 'prod'].contains(params.Docker_Deploy)) {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
               withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.GIT_COMMIT, DOCKER_PSW, DOCKER_USR, IMAGE_REGISTRY)
+              }
               }
              }
             }
@@ -105,7 +106,7 @@ def call ( Map config ) {
         }
      }
   }
-  }
+
 
  // Methods
  def Build () {
