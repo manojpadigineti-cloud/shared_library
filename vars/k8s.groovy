@@ -11,7 +11,7 @@ def call ( Map config ) {
             choice(name: 'Code_Build', choices: ['NO', 'YES'], description: 'Building your code required'),
             choice(name: 'Code_Scan', choices: ['NO', 'YES'], description: 'Code Scan required'),
             choice(name: 'Docker_Build_PUSH', choices: ['NO', 'YES'], description: 'Docker Build and Push to Repository'),
-            choice(name: 'Kubernetes_Deploy', choices: ['N/A','Dev', 'QA', 'Stage', 'Prod'], description: 'Where to deploy the application')
+            choice(name: 'Kubernetes_Deploy', choices: ['N/A','dev', 'qa', 'stage', 'prod'], description: 'Where to deploy the application')
         ])
     ])
 
@@ -43,7 +43,7 @@ def call ( Map config ) {
         }
        stage ("Build Application ${env.appName}") {
           script {
-          if (params.Code_Build == 'YES' || params.Code_Scan == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Kubernetes_Deploy)) {
+          if (params.Code_Build == 'YES' || params.Code_Scan == 'YES' || ['dev', 'qa', 'stage', 'prod'].contains(params.Kubernetes_Deploy)) {
                   Build().call()
             }
           else {
@@ -53,7 +53,7 @@ def call ( Map config ) {
          }
        stage ("Code Scan for ${env.appName}") {
              script {
-              if (params.Code_Scan == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Kubernetes_Deploy)) {
+              if (params.Code_Scan == 'YES' || ['dev', 'qa', 'stage', 'prod'].contains(params.Kubernetes_Deploy)) {
               withSonarQubeEnv('Sonar-Server') {
                  Sonar_Scan().call()
                  }
@@ -68,7 +68,7 @@ def call ( Map config ) {
           }
         stage ("Docker Build_Push of Application ${env.appName}") {
           script {
-            if (params.Docker_Build_PUSH == 'YES' || ['Dev', 'QA', 'Stage', 'Prod'].contains(params.Kubernetes_Deploy)) {
+            if (params.Docker_Build_PUSH == 'YES' || ['dev', 'qa', 'stage', 'prod'].contains(params.Kubernetes_Deploy)) {
             withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
               withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                Docker_Build_Push(IPADDRESS, env.port, PASSWORD, DOCKER_REPO, env.GIT_COMMIT, DOCKER_PSW, DOCKER_USR, IMAGE_REGISTRY)
@@ -78,9 +78,9 @@ def call ( Map config ) {
           }
          }
 
-        stage ("Deploy to Dev of ${env.appName}") {
+        stage ("Deploy to dev of ${env.appName}") {
           script {
-            if (params.Kubernetes_Deploy == 'Dev') {
+            if (params.Kubernetes_Deploy == 'dev') {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Kubernetes_Deployment (PASSWORD, IPADDRESS, env.appName, params.Kubernetes_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
@@ -89,9 +89,9 @@ def call ( Map config ) {
               }
             }
           }
-        stage ("Deploy to QA of ${env.appName}") {
+        stage ("Deploy to qa of ${env.appName}") {
           script {
-            if (params.Kubernetes_Deploy == 'QA') {
+            if (params.Kubernetes_Deploy == 'qa') {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Kubernetes_Deployment (PASSWORD, IPADDRESS, env.appName, params.Kubernetes_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
@@ -100,9 +100,9 @@ def call ( Map config ) {
               }
             }
           }
-        stage ("Deploy to Stage of ${env.appName}") {
+        stage ("Deploy to stage of ${env.appName}") {
           script {
-            if (params.Kubernetes_Deploy == 'Stage' && env.BRANCH_NAME ==~ /^release.*/) {
+            if (params.Kubernetes_Deploy == 'stage' && env.BRANCH_NAME ==~ /^release.*/) {
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Kubernetes_Deployment (PASSWORD, IPADDRESS, env.appName, params.Kubernetes_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
@@ -114,9 +114,9 @@ def call ( Map config ) {
             }
           }
         }
-        stage ("Deploy to Prod of ${env.appName}") {
+        stage ("Deploy to prod of ${env.appName}") {
           script {
-            if (params.Kubernetes_Deploy == 'Prod' && env.TAG_NAME ==~ /^v.*/) {    //"${env.TAG_NAME}".startsWith('v') --  Another way for tag declaration
+            if (params.Kubernetes_Deploy == 'prod' && env.TAG_NAME ==~ /^v.*/) {    //"${env.TAG_NAME}".startsWith('v') --  Another way for tag declaration
               withCredentials([usernamePassword(credentialsId: DOCKER_CREDS, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                 withCredentials([usernamePassword(credentialsId: DOCKER_HUB, usernameVariable: 'DOCKER_USR', passwordVariable: 'DOCKER_PSW')]) {
                   Kubernetes_Deployment (PASSWORD, IPADDRESS, env.appName, params.Kubernetes_Deploy, env.hostport, env.port, IMAGE_REGISTRY, DOCKER_REPO, env.GIT_COMMIT)
