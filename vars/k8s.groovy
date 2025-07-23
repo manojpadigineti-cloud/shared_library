@@ -165,7 +165,7 @@ def call ( Map config ) {
       sh """
        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} gcloud auth activate-service-account --key-file=/home/devops/gcp/key.json
        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} gcloud container clusters get-credentials i27academy-cluster --region us-west1 --project canvas-voltage-460913-r5
-       sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} sed -i -e "s|IMAGE|${IMAGE_REGISTRY}|g" -e "s|APPNAME|${APPNAME}|g" -e "s|PORT|${CONTAINERPORT}|g" /home/devops/k8s/deployment.yml
+           sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} sed -i -e "s|IMAGE|${IMAGE_REGISTRY}/${REPO_NAME}/${env.appName}:${GIT_COMMIT}|g" -e "s|APPNAME|${APPNAME}|g" -e "s|PORT|${CONTAINERPORT}|g" /home/devops/k8s/deployment.yml
        sshpass -p '${PASSWORD}' -v ssh -o StrictHostKeyChecking=no devops@${IPADDRESS} kubectl apply -f /home/devops/k8s/deployment.yml
        """
   }
